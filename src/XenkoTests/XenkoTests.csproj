@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <XenkoCurrentPackagePath>$(MSBuildThisFileDirectory)XenkoTests.xkpkg</XenkoCurrentPackagePath>
   </PropertyGroup>
 
   <ItemGroup>

@@ -11,9 +11,13 @@
     using Xenko.Rendering.Materials;
     using Xenko.Rendering.Materials.ComputeColors;
     using Xenko.Rendering.ProceduralModels;
+    using Xenko.UI;
+    using Xenko.UI.Controls;
+    using Xenko.UI.Panels;
 
     public class Game1 : Game
     {
+        private SpriteFont arial16;
         private Entity cubeEntity;
 
         protected async override Task LoadContent()
@@ -24,6 +28,10 @@
 
             // Instantiate a scene with a single entity and model component
             var scene = new Scene();
+
+            arial16 = Content.Load<SpriteFont>("Arial18");
+
+            scene.Entities.Add(GetUIEntity(arial16, true, new Vector3(0, 0, 4)));
 
             // Create a cube entity
             cubeEntity = new Entity();
@@ -67,6 +75,67 @@
 
             // Create a scene instance
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
+        }
+
+        protected Entity GetUIEntity(SpriteFont font, bool fixedSize, Vector3 position)
+        {
+            // Create and initialize "Touch Screen to Start"
+            var touchStartLabel = new ContentDecorator
+            {
+                Content = new TextBlock
+                {
+                    Font = font,
+                    TextSize = 32,
+                    Text = (fixedSize) ? "Fixed Size UI" : "Regular UI",
+                    TextColor = Color.White
+                },
+                Padding = new Thickness(30, 20, 30, 25),
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            //touchStartLabel.SetPanelZIndex(1);
+
+            var grid = new Grid
+            {
+                BackgroundColor = (fixedSize) ? new Color(255, 0, 255) : new Color(255, 255, 0),
+                MaximumWidth = 100,
+                MaximumHeight = 100,
+                MinimumWidth = 100,
+                MinimumHeight = 100,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+            };
+
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.ColumnDefinitions.Add(new StripDefinition());
+            grid.LayerDefinitions.Add(new StripDefinition());
+
+            grid.Children.Add(touchStartLabel);
+
+            // Add the background
+            var background = new ImageElement { StretchType = StretchType.Fill };
+            background.SetPanelZIndex(-1);
+
+            var uiEntity = new Entity();
+
+            // Create a procedural model with a diffuse material
+            var uiComponent = new UIComponent
+            {
+                Page = new UIPage
+                {
+                    RootElement = new UniformGrid { Children = { background, grid } }
+                },
+                //IsBillboard = true,
+                IsFixedSize = fixedSize,
+                IsFullScreen = false,
+                Resolution = new Vector3(100, 100, 100), // Same size as the inner grid
+                Size = new Vector3(0.1f), // 10% of the vertical resolution
+            };
+            uiEntity.Add(uiComponent);
+
+            uiEntity.Transform.Position = position;
+
+            return uiEntity;
         }
 
         protected override void Draw(GameTime gameTime)

@@ -13,6 +13,13 @@
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <XenkoCurrentPackagePath>$(MSBuildThisFileDirectory)..\XenkoTests\XenkoTests.xkpkg</XenkoCurrentPackagePath>
+    <XenkoProjectType>Executable</XenkoProjectType>
+    <XenkoPlatform>Windows</XenkoPlatform>
+    <XenkoBuildProfile>Windows</XenkoBuildProfile>
+  </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Xenko" Version="3.1.0.1-beta02-0543" PrivateAssets="contentfiles;analyzers" />
   </ItemGroup>
