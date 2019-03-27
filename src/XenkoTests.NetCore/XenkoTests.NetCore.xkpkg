@@ -1,16 +1,18 @@
 !Package
 SerializedVersion: {Assets: 3.1.0.0}
 Meta:
-    Name: XenkoTests
+    Name: XenkoTests.NetCore
     Version: 1.0.0
     Authors: []
     Owners: []
     Dependencies: null
 AssetFolders:
-    -   Path: !dir Assets
-ResourceFolders: []
+    -   Path: !dir ../Assets
+ResourceFolders:
+    - !dir Resources
 OutputGroupDirectories: {}
 ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
-RootAssets: []
+RootAssets:
+    - d743e676-2c6f-4fc0-917d-4203d4d409ed:DynamicFonts/Arial18
