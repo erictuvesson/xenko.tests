@@ -9,30 +9,32 @@
     using Xenko.Rendering.Materials;
     using Xenko.Rendering.Materials.ComputeColors;
     using Xenko.Rendering.ProceduralModels;
+    using XenkoTests.Components.Camera;
 
     public class Game1 : GameCore
     {
-        private Entity cubeEntity;
+        private TopDownCamera camera;
 
         protected override Task<Scene> BuildScene()
         {
             var scene = new Scene();
 
-            scene.Entities.Add(cubeEntity = GetCube());
+            scene.Entities.Add(GetCube(new Vector3(0, 0, 0), new Vector3(15, 1, 15)));
             scene.Entities.Add(GetLight());
 
-            var cameraEntity = new Entity { new CameraComponent { Slot = Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId() } };
-            cameraEntity.Transform.Position = new Vector3(0, 0, 5);
-            scene.Entities.Add(cameraEntity);
+            camera = new TopDownCamera(
+                    new TopDownCameraSettings(),
+                    Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId());
+
+            scene.Entities.Add(new Entity { camera });
 
             return Task.FromResult(scene);
         }
 
-        protected Entity GetCube()
+        protected Entity GetCube(Vector3 position, Vector3? scale = null)
         {
             var cubeEntity = new Entity();
 
-            // Create a procedural model with a diffuse material
             var model = new Model();
             var material = Material.New(GraphicsDevice, new MaterialDescriptor
             {
@@ -48,6 +50,9 @@
             var modelDescriptor = new ProceduralModelDescriptor(new CubeProceduralModel());
             modelDescriptor.GenerateModel(Services, model);
 
+            cubeEntity.Transform.Position = position;
+            cubeEntity.Transform.Scale = scale ?? Vector3.One;
+
             return cubeEntity;
         }
 
@@ -58,8 +63,8 @@
                 new LightComponent()
             };
 
-            lightEntity.Transform.Position = new Vector3(0, 0, 1);
-            lightEntity.Transform.Rotation = Quaternion.RotationY(MathUtil.DegreesToRadians(45));
+            lightEntity.Transform.Position = new Vector3(0, 20, 0);
+            lightEntity.Transform.Rotation = Quaternion.RotationYawPitchRoll(45, -45, 0);
 
             return lightEntity;
         }
@@ -67,9 +72,6 @@
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
-
-            var time = (float)gameTime.Total.TotalSeconds;
-            cubeEntity.Transform.Rotation = Quaternion.RotationY(time) * Quaternion.RotationX(time * 0.5f);
         }
 
         protected override void Draw(GameTime gameTime)
