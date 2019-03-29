@@ -5,6 +5,7 @@
     using Xenko.Core.Mathematics;
     using Xenko.Engine;
     using Xenko.Games;
+    using Xenko.Graphics;
     using Xenko.Rendering;
     using Xenko.Rendering.Materials;
     using Xenko.Rendering.Materials.ComputeColors;
@@ -19,19 +20,19 @@
         {
             var scene = new Scene();
 
-            scene.Entities.Add(GetCube(new Vector3(0, 0, 0), new Vector3(15, 1, 15)));
+            scene.Entities.Add(GetCube(new Vector3(0, -1, 0), new Vector3(15, 1, 15)));
             scene.Entities.Add(GetLight());
 
-            camera = new TopDownCamera(
-                    new TopDownCameraSettings(),
-                    Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId());
-
+            var cameraSlot = Services.GetSafeServiceAs<SceneSystem>().GraphicsCompositor.Cameras[0].ToSlotId();
+            camera = new TopDownCamera(new TopDownCameraSettings(), cameraSlot);
             scene.Entities.Add(new Entity { camera });
+
+            camera.Entity.AddChild(GetCube(Vector3.Zero, new Vector3(1), Color.Red));
 
             return Task.FromResult(scene);
         }
 
-        protected Entity GetCube(Vector3 position, Vector3? scale = null)
+        protected Entity GetCube(Vector3 position, Vector3? scale = null, Color? color = null)
         {
             var cubeEntity = new Entity();
 
@@ -40,7 +41,7 @@
             {
                 Attributes =
                 {
-                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(Color.White)),
+                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor(color ?? Color.White)),
                     DiffuseModel = new MaterialDiffuseLambertModelFeature()
                 }
             });

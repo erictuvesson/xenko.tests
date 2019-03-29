@@ -47,6 +47,8 @@
             }
         }
 
+        public CameraComponent CameraComponent { get; private set; }
+
         public Entity Offset { get; private set; }
         public Entity Arm { get; private set; }
         public SceneCameraSlotId Slot { get; set; }
@@ -66,7 +68,9 @@
 
         public override void Start()
         {
-            Arm = new Entity { new CameraComponent { Slot = Slot } };
+            CameraComponent = new CameraComponent { Slot = Slot };
+
+            Arm = new Entity { CameraComponent };
             Arm.Transform.Position = new Vector3(0, 0, 12);
 
             Offset = new Entity();
