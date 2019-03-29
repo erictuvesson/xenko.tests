@@ -10,15 +10,38 @@
     using Xenko.Rendering.Materials;
     using Xenko.Rendering.Materials.ComputeColors;
     using Xenko.Rendering.ProceduralModels;
+    using Xenko.UI;
+    using Xenko.UI.Controls;
     using XenkoTests.Components.Camera;
 
     public class Game1 : GameCore
     {
         private TopDownCamera camera;
 
+        protected Entity UIRoot;
+        protected UIComponent UIComponent => UIRoot.Get<UIComponent>();
+        protected UISystem UI { get; private set; }
+
         protected override Task<Scene> BuildScene()
         {
             var scene = new Scene();
+
+            UIRoot = new Entity("Root entity of camera UI") { new UIComponent() };
+            UIComponent.IsFullScreen = true;
+            UIComponent.Resolution = new Vector3(10, 50, 50);
+            UIComponent.ResolutionStretch = ResolutionStretch.FixedWidthFixedHeight;
+            scene.Entities.Add(UIRoot);
+
+            UI = Services.GetService<UISystem>();
+            if (UI == null)
+            {
+                UI = new UISystem(Services);
+                Services.AddService(UI);
+                GameSystems.Add(UI);
+            }
+
+            var button = new Button();
+            UIComponent.Page = new UIPage { RootElement = button };
 
             scene.Entities.Add(GetCube(new Vector3(0, -1, 0), new Vector3(15, 1, 15)));
             scene.Entities.Add(GetLight());
